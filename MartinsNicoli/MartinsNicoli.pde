@@ -68,7 +68,7 @@ Triangle[] makeSphere(int radius, int divisions)
 {
   //ALL variables
   int nPoints = divisions*divisions;
-  int nTriang = (nPoints - divisions)*2;
+  int nTriang = 198;//(nPoints)*2 - divisions;
   float[] xCoord = new float[nPoints];
   float[] yCoord = new float[nPoints];
   float[] zCoord = new float[nPoints];
@@ -140,28 +140,7 @@ Triangle[] makeSphere(int radius, int divisions)
   return returnTriang;
 }
 
-void tesselationPoints(int radius, int divisions){
-  float phiIncrem = PI/divisions;
-  float thetaIncrem = TWO_PI/divisions;
-  float myX, myY;
-  float myPhi = 0.0f, myTheta = 0.0f;
   
-  for(int i = 0; i < 10; i++){//myTheta <= TWO_PI){
-     for(int j = 0; j <= 10; j++){
-       myPhi = j*phiIncrem;
-       myTheta = i*thetaIncrem;
-       myX = radius*sin(myPhi)*sin(myTheta);
-       myY = radius*cos(myPhi);
-       stroke(1,1,1);
-       beginShape(POINTS);
-         vertex(myX, myY);
-       endShape();
-     }
-  }
-  
-  
-}
-
 
 // takes a new triangle, and calculates it's normals and edge vectors
 Triangle setupTriangle(Triangle t)
@@ -184,6 +163,14 @@ Triangle setupTriangle(Triangle t)
 // those with your versions once it works.
 void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
 {
+  stroke(1,1,1);
+  strokeWeight(10); //<>//
+  beginShape(POINTS);
+  vertex(t.pv1[X], t.pv1[Y]);
+  vertex(t.pv2[X], t.pv2[Y]);
+  vertex(t.pv3[X], t.pv3[Y]);
+  endShape();
+
 }
 
 // uses a scanline algorithm to fill the 2D on-raster triangle
