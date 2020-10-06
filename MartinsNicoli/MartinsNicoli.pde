@@ -68,7 +68,7 @@ Triangle[] makeSphere(int radius, int divisions)
 {
   //ALL variables
   int nPoints = divisions*divisions;
-  int nTriang = 110;//188;//110;//(divisions*(divisions-1))*2 - 2*divisions;//(nPoints- divisions)*2 ;
+  int nTriang = (divisions*(divisions-1))*2;
   float[] xCoord = new float[nPoints];
   float[] yCoord = new float[nPoints];
   float[] zCoord = new float[nPoints];
@@ -80,7 +80,6 @@ Triangle[] makeSphere(int radius, int divisions)
   float[] v3 = new float[3];
   float[] bottomPoint = new float[]{0, -1*radius, 0};
   float myPhi = 0, myTheta = 0;
-  int phiCheck = 1;
   float phiIncrem = PI/divisions;
   float thetaIncrem = TWO_PI/divisions;
   
@@ -90,7 +89,7 @@ Triangle[] makeSphere(int radius, int divisions)
       myTheta = i*thetaIncrem;
       myPhi = j*phiIncrem;
       xCoord[coordPos] = radius*sin(myPhi)*sin(myTheta);
-      yCoord[coordPos] = radius*cos(myPhi);
+      yCoord[coordPos] = radius*cos(myPhi); //<>//
       zCoord[coordPos] = radius*sin(myPhi)*cos(myTheta);
       coordPos++;
     }
@@ -104,7 +103,7 @@ Triangle[] makeSphere(int radius, int divisions)
   
   //Creating Triangles
   for(int k = 0; k < nPoints; k++){
-    if( (k-9)%10 == 0){//phiCheck == 10){
+    if( (k-9)%10 == 0){
       v1[X] = xCoord[k%nPoints];
       v1[Y] = yCoord[k%nPoints];
       v1[Z] = zCoord[k%nPoints];
@@ -112,13 +111,12 @@ Triangle[] makeSphere(int radius, int divisions)
       v3[X] = xCoord[(k+10)%nPoints];
       v3[Y] = yCoord[(k+10)%nPoints];
       v3[Z] = zCoord[(k+10)%nPoints];
-      returnTriang[triangPos] = new Triangle(v1, v2, v3); //<>//
+      returnTriang[triangPos] = new Triangle(v1, v2, v3);
       triangPos++;
-      phiCheck = 1;
     }
     else{
-      if(k%10 == 1){ 
-        v1[X] = xCoord[k%nPoints];
+      if(k%10 != 1){ 
+        v1[X] = xCoord[k%nPoints]; //<>//
         v1[Y] = yCoord[k%nPoints];
         v1[Z] = zCoord[k%nPoints];
         v2[X] = xCoord[(k+1)%nPoints];
@@ -142,7 +140,6 @@ Triangle[] makeSphere(int radius, int divisions)
       returnTriang[triangPos] = new Triangle(v1, v2, v3);
       triangPos++;
     }
-    phiCheck++;
   }
   //printing traingles for verification
   for(int i =0 ; i < nTriang ; i++){
@@ -177,21 +174,37 @@ Triangle setupTriangle(Triangle t)
 // those with your versions once it works.
 void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
 {
-  stroke(1,1,0);
+  /*stroke(1,1,0);
   strokeWeight(10); //<>//
   beginShape(POINTS);
   vertex(t.pv1[X], t.pv1[Y]);
   vertex(t.pv2[X], t.pv2[Y]);
   vertex(t.pv3[X], t.pv3[Y]);
-  endShape();
+  endShape();*/
   
-  stroke(1,0,1);
+  /*stroke(1,0,1);
   strokeWeight(1);
   beginShape(TRIANGLE);
   vertex(t.pv1[X], t.pv1[Y]);
   vertex(t.pv2[X], t.pv2[Y]);
   vertex(t.pv3[X], t.pv3[Y]);
-  endShape(CLOSE);
+  endShape(CLOSE);*/
+  
+  stroke(1,0,1);
+  beginShape(LINES);
+  vertex(t.pv1[X], t.pv1[Y]);
+  vertex(t.pv2[X], t.pv2[Y]);
+  endShape();
+  //stroke(1,0,0);
+  beginShape(LINES);
+  vertex(t.pv2[X], t.pv2[Y]);
+  vertex(t.pv3[X], t.pv3[Y]);
+  endShape();
+  //stroke(0,0,1);
+  beginShape(LINES);
+  vertex(t.pv3[X], t.pv3[Y]);
+  vertex(t.pv1[X], t.pv1[Y]);
+  endShape();
 
 }
 
@@ -221,7 +234,7 @@ void bresLine(int fromX, int fromY, int toX, int toY) //<>//
   int myX = fromX, myY = fromY, sX ,sY;
   int dX = toX - fromX;
   int dY = toY - fromY;
-  float slope, error = 0.5;
+  float slope;
   
   if(dX == 0 && dY == 0){
     plotPoint(toX, toY);
