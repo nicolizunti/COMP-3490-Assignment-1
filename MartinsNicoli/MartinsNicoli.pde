@@ -118,7 +118,7 @@ void bresLine(int fromX, int fromY, int toX, int toY) //<>//
   int myX = fromX, myY = fromY, sX ,sY;
   int dX = toX - fromX;
   int dY = toY - fromY;
-  float slope, error = 0.5;
+  float slope;//, error = 0.5;
   
   if(dX == 0 && dY == 0){ //<>//
     plotPoint(toX, toY);
@@ -128,8 +128,8 @@ void bresLine(int fromX, int fromY, int toX, int toY) //<>//
     if(dX != 0) sX = dX/abs(dX);
     else sX = 0;
     
-    slope = abs((float)dX/dY);
     sY = dY/abs(dY);
+    /*slope = abs((float)dX/dY);
     
     while(myX < toX){
       plotPoint(myX,myY);
@@ -137,15 +137,14 @@ void bresLine(int fromX, int fromY, int toX, int toY) //<>//
       if(error >= 1){ 
         myX += sX;
         error = error -1;
-      }
-    }
+      }*/
     
-    /*for(int i = 0; i < abs(dY); i++){
+    for(int i = 0; i < abs(dY); i++){
       slope = abs((float)dX/dY);
       myX = floor((fromX + i*slope*sX) + 0.5);
       myY = fromY + i*sY;
       plotPoint(myX,myY);
-    }*/
+    }
   }
   else{ //(dX != 0 && abs(dY/dX) <= 1) //<>//
   
