@@ -190,22 +190,24 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   vertex(t.pv3[X], t.pv3[Y]);
   endShape(CLOSE);*/
   
-  stroke(1,0,1);
+  /*stroke(1,0,1);
   beginShape(LINES);
   vertex(t.pv1[X], t.pv1[Y]);
   vertex(t.pv2[X], t.pv2[Y]);
   endShape();
-  //stroke(1,0,0);
   beginShape(LINES);
   vertex(t.pv2[X], t.pv2[Y]);
   vertex(t.pv3[X], t.pv3[Y]);
   endShape();
-  //stroke(0,0,1);
   beginShape(LINES);
   vertex(t.pv3[X], t.pv3[Y]);
   vertex(t.pv1[X], t.pv1[Y]);
-  endShape();
-
+  endShape();*/
+  
+  stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
+  bresLine((int)t.pv1[X], (int)t.pv1[Y], (int)t.pv2[X], (int)t.pv2[Y]);
+  bresLine((int)t.pv2[X], (int)t.pv2[Y], (int)t.pv3[X], (int)t.pv3[Y]);
+  bresLine((int)t.pv3[X], (int)t.pv3[Y], (int)t.pv1[X], (int)t.pv1[Y]);
 }
 
 // uses a scanline algorithm to fill the 2D on-raster triangle
