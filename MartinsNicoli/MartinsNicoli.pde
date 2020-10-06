@@ -68,7 +68,7 @@ Triangle[] makeSphere(int radius, int divisions)
 {
   //ALL variables
   int nPoints = divisions*divisions;
-  int nTriang = 198;//(nPoints)*2 - divisions;
+  int nTriang = 110;//188;//110;//(divisions*(divisions-1))*2 - 2*divisions;//(nPoints- divisions)*2 ;
   float[] xCoord = new float[nPoints];
   float[] yCoord = new float[nPoints];
   float[] zCoord = new float[nPoints];
@@ -96,9 +96,15 @@ Triangle[] makeSphere(int radius, int divisions)
     }
   }
   
+  //printing coord for verification
+  for(int i =0 ; i < nPoints ; i++){
+    println(xCoord[i], yCoord[i], zCoord[i]);
+  }
+  
+  
   //Creating Triangles
   for(int k = 0; k < nPoints; k++){
-    if(k == 10){
+    if( (k-9)%10 == 0){//phiCheck == 10){
       v1[X] = xCoord[k%nPoints];
       v1[Y] = yCoord[k%nPoints];
       v1[Z] = zCoord[k%nPoints];
@@ -106,11 +112,12 @@ Triangle[] makeSphere(int radius, int divisions)
       v3[X] = xCoord[(k+10)%nPoints];
       v3[Y] = yCoord[(k+10)%nPoints];
       v3[Z] = zCoord[(k+10)%nPoints];
-      returnTriang[triangPos] = new Triangle(v1, v2, v3);
+      returnTriang[triangPos] = new Triangle(v1, v2, v3); //<>//
       triangPos++;
+      phiCheck = 1;
     }
     else{
-      if(k != 1){ 
+      if(k%10 == 1){ 
         v1[X] = xCoord[k%nPoints];
         v1[Y] = yCoord[k%nPoints];
         v1[Z] = zCoord[k%nPoints];
@@ -135,6 +142,13 @@ Triangle[] makeSphere(int radius, int divisions)
       returnTriang[triangPos] = new Triangle(v1, v2, v3);
       triangPos++;
     }
+    phiCheck++;
+  }
+  //printing traingles for verification
+  for(int i =0 ; i < nTriang ; i++){
+    println("triangle ", i, ": ","v1: ",returnTriang[i].v1[X], returnTriang[i].v1[Y],returnTriang[i].v1[Z],
+            " v2: ",returnTriang[i].v2[X], returnTriang[i].v2[Y],returnTriang[i].v2[Z],
+            " v3: ",returnTriang[i].v3[X], returnTriang[i].v3[Y],returnTriang[i].v3[Z]);
   }
   
   return returnTriang;
@@ -163,13 +177,21 @@ Triangle setupTriangle(Triangle t)
 // those with your versions once it works.
 void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
 {
-  stroke(1,1,1);
+  stroke(1,1,0);
   strokeWeight(10); //<>//
   beginShape(POINTS);
   vertex(t.pv1[X], t.pv1[Y]);
   vertex(t.pv2[X], t.pv2[Y]);
   vertex(t.pv3[X], t.pv3[Y]);
   endShape();
+  
+  stroke(1,0,1);
+  strokeWeight(1);
+  beginShape(TRIANGLE);
+  vertex(t.pv1[X], t.pv1[Y]);
+  vertex(t.pv2[X], t.pv2[Y]);
+  vertex(t.pv3[X], t.pv3[Y]);
+  endShape(CLOSE);
 
 }
 
