@@ -96,7 +96,48 @@ Triangle[] makeSphere(int radius, int divisions)
     }
   }
   
-  return new Triangle[0];
+  //Creating Triangles
+  for(int k = 0; k < nPoints; k++){
+    if(k == 10){
+      v1[X] = xCoord[k%nPoints];
+      v1[Y] = yCoord[k%nPoints];
+      v1[Z] = zCoord[k%nPoints];
+      v2 = Arrays.copyOf(bottomPoint, bottomPoint.length); 
+      v3[X] = xCoord[(k+10)%nPoints];
+      v3[Y] = yCoord[(k+10)%nPoints];
+      v3[Z] = zCoord[(k+10)%nPoints];
+      returnTriang[triangPos] = new Triangle(v1, v2, v3);
+      triangPos++;
+    }
+    else{
+      if(k != 1){ 
+        v1[X] = xCoord[k%nPoints];
+        v1[Y] = yCoord[k%nPoints];
+        v1[Z] = zCoord[k%nPoints];
+        v2[X] = xCoord[(k+1)%nPoints];
+        v2[Y] = yCoord[(k+1)%nPoints];
+        v2[Z] = zCoord[(k+1)%nPoints];
+        v3[X] = xCoord[(k+10)%nPoints];
+        v3[Y] = yCoord[(k+10)%nPoints];
+        v3[Z] = zCoord[(k+10)%nPoints];
+        returnTriang[triangPos] = new Triangle(v1, v2, v3);
+        triangPos++;
+      }
+      v1[X] = xCoord[(k+11)%nPoints];
+      v1[Y] = yCoord[(k+11)%nPoints];
+      v1[Z] = zCoord[(k+11)%nPoints];
+      v2[X] = xCoord[(k+10)%nPoints];
+      v2[Y] = yCoord[(k+10)%nPoints];
+      v2[Z] = zCoord[(k+10)%nPoints];
+      v3[X] = xCoord[(k+1)%nPoints];
+      v3[Y] = yCoord[(k+1)%nPoints];
+      v3[Z] = zCoord[(k+1)%nPoints];
+      returnTriang[triangPos] = new Triangle(v1, v2, v3);
+      triangPos++;
+    }
+  }
+  
+  return returnTriang;
 }
 
 void tesselationPoints(int radius, int divisions){
