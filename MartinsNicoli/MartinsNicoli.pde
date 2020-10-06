@@ -26,7 +26,7 @@ void setup() {
   resetMatrix();
   colorMode(RGB, 1.0f);
 
-  sphereList = makeSphere(SPHERE_SIZE, 10);
+  sphereList = makeSphere(SPHERE_SIZE, 20);//10
   rotatedList = new Triangle[sphereList.length];
   announceSettings();
 }
@@ -68,7 +68,7 @@ Triangle[] makeSphere(int radius, int divisions)
 {
   //ALL variables
   int nPoints = divisions*divisions;
-  int nTriang = (divisions*(divisions-1))*2;
+  int nTriang = (divisions*(divisions-2))*2 + 2*divisions;
   float[] xCoord = new float[nPoints];
   float[] yCoord = new float[nPoints];
   float[] zCoord = new float[nPoints];
@@ -103,37 +103,37 @@ Triangle[] makeSphere(int radius, int divisions)
   
   //Creating Triangles
   for(int k = 0; k < nPoints; k++){
-    if( (k-9)%10 == 0){
+    if( (k-(divisions-1))%divisions == 0){
       v1[X] = xCoord[k%nPoints];
       v1[Y] = yCoord[k%nPoints];
       v1[Z] = zCoord[k%nPoints];
       v2 = Arrays.copyOf(bottomPoint, bottomPoint.length); 
-      v3[X] = xCoord[(k+10)%nPoints];
-      v3[Y] = yCoord[(k+10)%nPoints];
-      v3[Z] = zCoord[(k+10)%nPoints];
+      v3[X] = xCoord[(k+divisions)%nPoints];
+      v3[Y] = yCoord[(k+divisions)%nPoints];
+      v3[Z] = zCoord[(k+divisions)%nPoints];
       returnTriang[triangPos] = new Triangle(v1, v2, v3);
       triangPos++;
     }
     else{
-      if(k%10 != 1){ 
+      if(k%divisions != 0){ 
         v1[X] = xCoord[k%nPoints]; //<>//
         v1[Y] = yCoord[k%nPoints];
         v1[Z] = zCoord[k%nPoints];
         v2[X] = xCoord[(k+1)%nPoints];
         v2[Y] = yCoord[(k+1)%nPoints];
         v2[Z] = zCoord[(k+1)%nPoints];
-        v3[X] = xCoord[(k+10)%nPoints];
-        v3[Y] = yCoord[(k+10)%nPoints];
-        v3[Z] = zCoord[(k+10)%nPoints];
+        v3[X] = xCoord[(k+divisions)%nPoints];
+        v3[Y] = yCoord[(k+divisions)%nPoints];
+        v3[Z] = zCoord[(k+divisions)%nPoints];
         returnTriang[triangPos] = new Triangle(v1, v2, v3);
         triangPos++;
       }
-      v1[X] = xCoord[(k+11)%nPoints];
-      v1[Y] = yCoord[(k+11)%nPoints];
-      v1[Z] = zCoord[(k+11)%nPoints];
-      v2[X] = xCoord[(k+10)%nPoints];
-      v2[Y] = yCoord[(k+10)%nPoints];
-      v2[Z] = zCoord[(k+10)%nPoints];
+      v1[X] = xCoord[(k+divisions+1)%nPoints];
+      v1[Y] = yCoord[(k+divisions+1)%nPoints];
+      v1[Z] = zCoord[(k+divisions+1)%nPoints];
+      v2[X] = xCoord[(k+divisions)%nPoints];
+      v2[Y] = yCoord[(k+divisions)%nPoints];
+      v2[Z] = zCoord[(k+divisions)%nPoints];
       v3[X] = xCoord[(k+1)%nPoints];
       v3[Y] = yCoord[(k+1)%nPoints];
       v3[Z] = zCoord[(k+1)%nPoints];
@@ -182,13 +182,13 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   vertex(t.pv3[X], t.pv3[Y]);
   endShape();*/
   
-  /*stroke(1,0,1);
+  stroke(1,0,1);
   strokeWeight(1);
   beginShape(TRIANGLE);
   vertex(t.pv1[X], t.pv1[Y]);
   vertex(t.pv2[X], t.pv2[Y]);
   vertex(t.pv3[X], t.pv3[Y]);
-  endShape(CLOSE);*/
+  endShape(CLOSE);
   
   /*stroke(1,0,1);
   beginShape(LINES);
@@ -204,10 +204,10 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   vertex(t.pv1[X], t.pv1[Y]);
   endShape();*/
   
-  stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
+  /*stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
   bresLine((int)t.pv1[X], (int)t.pv1[Y], (int)t.pv2[X], (int)t.pv2[Y]);
   bresLine((int)t.pv2[X], (int)t.pv2[Y], (int)t.pv3[X], (int)t.pv3[Y]);
-  bresLine((int)t.pv3[X], (int)t.pv3[Y], (int)t.pv1[X], (int)t.pv1[Y]);
+  bresLine((int)t.pv3[X], (int)t.pv3[Y], (int)t.pv1[X], (int)t.pv1[Y]);*/
 }
 
 // uses a scanline algorithm to fill the 2D on-raster triangle
