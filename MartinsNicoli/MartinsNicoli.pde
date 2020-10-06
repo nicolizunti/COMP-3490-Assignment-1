@@ -16,6 +16,10 @@ class Triangle {
   float[] pv3;
 
   // add other things as needed, like normals (face, vectors), edge vectors, colors, etc.  
+  float[] normal;
+  float[] e1;
+  float[] e2;
+  float[] e3;
 }
 
 Triangle[] sphereList;
@@ -26,7 +30,7 @@ void setup() {
   resetMatrix();
   colorMode(RGB, 1.0f);
 
-  sphereList = makeSphere(SPHERE_SIZE, 20);//10
+  sphereList = makeSphere(SPHERE_SIZE, 10);//10
   rotatedList = new Triangle[sphereList.length];
   announceSettings();
 }
@@ -96,9 +100,9 @@ Triangle[] makeSphere(int radius, int divisions)
   }
   
   //printing coord for verification
-  for(int i =0 ; i < nPoints ; i++){
+  /*for(int i =0 ; i < nPoints ; i++){
     println(xCoord[i], yCoord[i], zCoord[i]);
-  }
+  }*/
   
   
   //Creating Triangles
@@ -142,11 +146,11 @@ Triangle[] makeSphere(int radius, int divisions)
     }
   }
   //printing traingles for verification
-  for(int i =0 ; i < nTriang ; i++){
+  /*for(int i =0 ; i < nTriang ; i++){
     println("triangle ", i, ": ","v1: ",returnTriang[i].v1[X], returnTriang[i].v1[Y],returnTriang[i].v1[Z],
             " v2: ",returnTriang[i].v2[X], returnTriang[i].v2[Y],returnTriang[i].v2[Z],
             " v3: ",returnTriang[i].v3[X], returnTriang[i].v3[Y],returnTriang[i].v3[Z]);
-  }
+  }*/
   
   return returnTriang;
 }
@@ -156,6 +160,13 @@ Triangle[] makeSphere(int radius, int divisions)
 // takes a new triangle, and calculates it's normals and edge vectors
 Triangle setupTriangle(Triangle t)
 {
+  //edge vectors
+  t.e1 = subtract(t.v2, t.v1); //v2 - v1
+  t.e2 = subtract(t.v3, t.v2); //v3 - v2
+  t.e3 = subtract(t.v1, t.v3); //v1 - v3
+  
+  t.normal = cross3(t.e1, t.e2);
+  
   return t;
 }
 
@@ -182,13 +193,13 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   vertex(t.pv3[X], t.pv3[Y]);
   endShape();*/
   
-  stroke(1,0,1);
+  /*stroke(1,0,1);
   strokeWeight(1);
   beginShape(TRIANGLE);
   vertex(t.pv1[X], t.pv1[Y]);
   vertex(t.pv2[X], t.pv2[Y]);
   vertex(t.pv3[X], t.pv3[Y]);
-  endShape(CLOSE);
+  endShape(CLOSE);*/
   
   /*stroke(1,0,1);
   beginShape(LINES);
@@ -203,11 +214,13 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   vertex(t.pv3[X], t.pv3[Y]);
   vertex(t.pv1[X], t.pv1[Y]);
   endShape();*/
-  
-  /*stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
-  bresLine((int)t.pv1[X], (int)t.pv1[Y], (int)t.pv2[X], (int)t.pv2[Y]);
-  bresLine((int)t.pv2[X], (int)t.pv2[Y], (int)t.pv3[X], (int)t.pv3[Y]);
-  bresLine((int)t.pv3[X], (int)t.pv3[Y], (int)t.pv1[X], (int)t.pv1[Y]);*/
+  //println(t.normal[Z]);
+  if(t.normal[Z] > 0){
+    stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
+    bresLine((int)t.pv1[X], (int)t.pv1[Y], (int)t.pv2[X], (int)t.pv2[Y]);
+    bresLine((int)t.pv2[X], (int)t.pv2[Y], (int)t.pv3[X], (int)t.pv3[Y]);
+    bresLine((int)t.pv3[X], (int)t.pv3[Y], (int)t.pv1[X], (int)t.pv1[Y]);
+  }
 }
 
 // uses a scanline algorithm to fill the 2D on-raster triangle

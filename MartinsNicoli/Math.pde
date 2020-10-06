@@ -7,13 +7,12 @@
 float cross2(float[] e1, float[] e2)
 {
   // TODO: 
-  return 0;
+  return 0.0;
 }
 
 float[] cross3(float[] a, float[] b)
 {
-  // TODO: 
-  return new float[]{0, 0, 0};
+  return new float[]{a[Y]*b[Z] - a[Z]*b[Y], a[Z]*b[X] - a[X]*b[Z], a[X]*b[Y] - a[Y]*b[X]};
 }
 
 // normalize v to length 1 in place
@@ -30,7 +29,6 @@ float dot(float[] v1, float[] v2)
 
 // return a new vector representing v1-v2
 float[] subtract(float[] v1, float v2[])
-{
-    // TODO:   
-  return new float[]{0, 0, 0};
+{  
+  return new float[]{v1[X] - v2[X], v1[Y] - v2[Y], v1[Z] - v2[Z]};
 }
