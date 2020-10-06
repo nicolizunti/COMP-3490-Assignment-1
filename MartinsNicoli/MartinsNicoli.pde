@@ -115,12 +115,13 @@ float[] phong(float[] p, float[] n, float[] eye, float[] light,
 // implements Bresenham's line algorithm
 void bresLine(int fromX, int fromY, int toX, int toY) //<>//
 {
+  
   int myX = fromX, myY = fromY, sX ,sY;
   int dX = toX - fromX;
   int dY = toY - fromY;
   float slope, error = 0.5;
   
-  if(dX == 0 && dY == 0){ //<>//
+  if(dX == 0 && dY == 0){
     plotPoint(toX, toY);
   }
   else if(dY != 0 && abs(dX/dY) <= 1){ 
@@ -129,29 +130,15 @@ void bresLine(int fromX, int fromY, int toX, int toY) //<>//
     else sX = 0;
     
     sY = dY/abs(dY);
-    /*slope = abs((float)dX/dY);
-    
-    while(myX < toX){
-      plotPoint(myX,myY);
-      myY += sY; 
-      if(error >= 1){ 
-        myX += sX;
-        error = error -1;
-      }*/
     
     for(int i = 0; i < abs(dY); i++){
       slope = abs((float)dX/dY);
-      //myX = floor((fromX + i*slope*sX) + 0.5);
-      error += slope;
-      if(error >= 0.5){
-        myX = myX + sX;
-        error = error - 1;
-      }
+      myX = floor((fromX + i*slope*sX) + 0.5);
       myY = fromY + i*sY;
       plotPoint(myX,myY);
     }
   }
-  else{ //(dX != 0 && abs(dY/dX) <= 1) //<>//
+  else{ //(dX != 0 && abs(dY/dX) <= 1)
   
     if(dY != 0) sY = dY/abs(dY);
     else sY = 0;
@@ -160,21 +147,17 @@ void bresLine(int fromX, int fromY, int toX, int toY) //<>//
     
     for(int i = 0; i < abs(dX); i++){
       slope = abs((float)dY/dX);
-      //myY = floor((fromY + i*slope*sY) + 0.5);
-      error += slope;
-      if(error >= 0.5){
-        myY = myY + sY;
-        error = error - 1;
-      }        
+      myY = floor((fromY + i*slope*sY) + 0.5);
       myX = fromX + i*sX;
       plotPoint(myX,myY);
     }
   }
-  
+   //<>// //<>//
 }
 
 void plotPoint(int myX, int myY){
   beginShape(POINTS);
   vertex(myX, myY);
   endShape();
+  println(myX, "  ",myY);
 }
