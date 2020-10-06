@@ -66,7 +66,59 @@ void draw() {
 //       store in an array then loop over those points and setup your triangles.
 Triangle[] makeSphere(int radius, int divisions)
 {
+  //ALL variables
+  int nPoints = divisions*divisions;
+  int nTriang = (nPoints - divisions)*2;
+  float[] xCoord = new float[nPoints];
+  float[] yCoord = new float[nPoints];
+  float[] zCoord = new float[nPoints];
+  int coordPos = 0;
+  Triangle[] returnTriang = new Triangle[nTriang];
+  int triangPos = 0;
+  float[] v1 = new float[3];
+  float[] v2 = new float[3];
+  float[] v3 = new float[3];
+  float[] bottomPoint = new float[]{0, -1*radius, 0};
+  float myPhi = 0, myTheta = 0;
+  int phiCheck = 1;
+  float phiIncrem = PI/divisions;
+  float thetaIncrem = TWO_PI/divisions;
+  
+  //Calculation point coordinates
+  for(int i = 0; i < divisions; i++){
+    for(int j = 0; j < divisions; j++){
+      myTheta = i*thetaIncrem;
+      myPhi = j*phiIncrem;
+      xCoord[coordPos] = radius*sin(myPhi)*sin(myTheta);
+      yCoord[coordPos] = radius*cos(myPhi);
+      zCoord[coordPos] = radius*sin(myPhi)*cos(myTheta);
+      coordPos++;
+    }
+  }
+  
   return new Triangle[0];
+}
+
+void tesselationPoints(int radius, int divisions){
+  float phiIncrem = PI/divisions;
+  float thetaIncrem = TWO_PI/divisions;
+  float myX, myY;
+  float myPhi = 0.0f, myTheta = 0.0f;
+  
+  for(int i = 0; i < 10; i++){//myTheta <= TWO_PI){
+     for(int j = 0; j <= 10; j++){
+       myPhi = j*phiIncrem;
+       myTheta = i*thetaIncrem;
+       myX = radius*sin(myPhi)*sin(myTheta);
+       myY = radius*cos(myPhi);
+       stroke(1,1,1);
+       beginShape(POINTS);
+         vertex(myX, myY);
+       endShape();
+     }
+  }
+  
+  
 }
 
 
@@ -159,5 +211,4 @@ void plotPoint(int myX, int myY){
   beginShape(POINTS);
   vertex(myX, myY);
   endShape();
-  println(myX, "  ",myY);
 }
