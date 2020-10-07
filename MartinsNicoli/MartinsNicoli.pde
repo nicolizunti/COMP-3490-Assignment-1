@@ -192,16 +192,15 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   
   //projection
   
-  //edge vectors
-  /*t.pe1 = subtract(t.pv2, t.pv1); //v2 - v1
-  t.pe2 = subtract(t.pv3, t.pv2); //v3 - v2
-  t.pe3 = subtract(t.pv1, t.pv3); //v1 - v3
-    
-  t.pnormal = cross2(t.pe1, t.pe2);*/
+  //"projected" edge vectors
+  t.pe1 = new float[]{t.pv2[X] - t.pv1[X], t.pv2[Y] - t.pv1[Y]};//subtract(t.pv2, t.pv1); //v2 - v1
+  t.pe2 = new float[]{t.pv3[X] - t.pv2[X], t.pv3[Y] - t.pv2[Y]}; //v3 - v2
   
-  //println(t.normal[Z]);
-  if(dot(t.normal, new float[]{0,0,-1}) < 0){
-    
+  t.pnormal = cross2(t.pe1, t.pe2);
+  
+  
+  if(t.pnormal > 0){//dot(t.normal, new float[]{0,0,-1}) < 0){
+    println(t.pnormal);
     stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
     
     bresLine((int)t.pv1[X], (int)t.pv1[Y], (int)t.pv2[X], (int)t.pv2[Y]);
