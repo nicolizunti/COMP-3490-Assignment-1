@@ -258,11 +258,12 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
 // - uses POINTS to draw on the raster
 void fillTriangle(Triangle t, Shading shading)
 {
-  if(shading == Shading.FLAT){
+  if(shading != Shading.NONE){
     int xmin = (int)min(t.pv1[X], t.pv2[X], t.pv3[X]); //<>//
     int xmax = (int)max(t.pv1[X], t.pv2[X], t.pv3[X]);
     int ymin = (int)min(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
-    int ymax = (int)max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);    
+    int ymax = (int)max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);  
+    float triangArea = abs(cross2(t.pe1,t.pe2))/2;      
         
     for(int i = ymin; i <= ymax; i++){
       for(int j = xmin; j <= xmax; j++){
@@ -270,28 +271,10 @@ void fillTriangle(Triangle t, Shading shading)
         float a2 = cross2(t.pe2, subtract(new float[]{j,i}, t.pv2));
         float a3 = cross2(t.pe3, subtract(new float[]{j,i}, t.pv3));
         if((a1 >= 0 && a2 >= 0 && a3 >= 0) || (a1 <= 0 && a2 <= 0 && a3 <= 0)){
-            stroke(FILL_COLOR[R], FILL_COLOR[G], FILL_COLOR[B]);
-            beginShape(POINTS);
-            vertex(j, i);
-            endShape(); //<>//
-        }
-      }
-    }
-  }
-  if(shading == Shading.BARYCENTRIC){
-    int xmin = (int)min(t.pv1[X], t.pv2[X], t.pv3[X]);
-    int xmax = (int)max(t.pv1[X], t.pv2[X], t.pv3[X]);
-    int ymin = (int)min(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
-    int ymax = (int)max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
-    float triangArea = cross2(t.pe1,t.pe2)/2;    
-        
-    for(int i = ymin; i <= ymax; i++){
-      for(int j = xmin; j <= xmax; j++){
-        float a1 = cross2(t.pe1, subtract(new float[]{j,i}, t.pv1));
-        float a2 = cross2(t.pe2, subtract(new float[]{j,i}, t.pv2));
-        float a3 = cross2(t.pe3, subtract(new float[]{j,i}, t.pv3));
-        if((a1 >= 0 && a2 >= 0 && a3 >= 0) || (a1 <= 0 && a2 <= 0 && a3 <= 0)){
-            stroke(a1/triangArea, a2/triangArea, a3/triangArea);
+            if(shading == Shading.FLAT)
+              stroke(FILL_COLOR[R], FILL_COLOR[G], FILL_COLOR[B]);
+            else if(shading == Shading.BARYCENTRIC) //<>//
+              stroke(((a1/2)/triangArea), ((a2/2)/triangArea), ((a3/2)/triangArea));
             beginShape(POINTS);
             vertex(j, i);
             endShape();
@@ -299,6 +282,7 @@ void fillTriangle(Triangle t, Shading shading)
       }
     }
   }
+  
   
 }
 
