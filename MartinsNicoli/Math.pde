@@ -30,5 +30,12 @@ float dot(float[] v1, float[] v2)
 // return a new vector representing v1-v2
 float[] subtract(float[] v1, float v2[])
 {  
+  //int a1 = v1.length, a2 = v2.length; //<>//
+  //println(a1, "  ", a2);
+  /*float[] result = new float[min(v1.length, v2.length)];
+  for(int i = 0; i < result.length; i++){
+    result[i] = v1[X] - v2[X];
+  }*/
+  
   return new float[]{v1[X] - v2[X], v1[Y] - v2[Y], v1[Z] - v2[Z]};
 }

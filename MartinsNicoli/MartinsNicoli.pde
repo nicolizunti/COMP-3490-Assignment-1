@@ -20,6 +20,11 @@ class Triangle {
   float[] e1;
   float[] e2;
   float[] e3;
+  
+  float pnormal;
+  float[] pe1;
+  float[] pe2;
+  float[] pe3;
 }
 
 Triangle[] sphereList;
@@ -93,7 +98,7 @@ Triangle[] makeSphere(int radius, int divisions)
       myTheta = i*thetaIncrem;
       myPhi = j*phiIncrem;
       xCoord[coordPos] = radius*sin(myPhi)*sin(myTheta);
-      yCoord[coordPos] = radius*cos(myPhi); //<>//
+      yCoord[coordPos] = radius*cos(myPhi);
       zCoord[coordPos] = radius*sin(myPhi)*cos(myTheta);
       coordPos++;
     }
@@ -120,7 +125,7 @@ Triangle[] makeSphere(int radius, int divisions)
     }
     else{
       if(k%divisions != 0){ 
-        v1[X] = xCoord[k%nPoints]; //<>//
+        v1[X] = xCoord[k%nPoints];
         v1[Y] = yCoord[k%nPoints];
         v1[Z] = zCoord[k%nPoints];
         v2[X] = xCoord[(k+1)%nPoints];
@@ -154,14 +159,13 @@ Triangle[] makeSphere(int radius, int divisions)
   
   return returnTriang;
 }
-
   
 
 // takes a new triangle, and calculates it's normals and edge vectors
 Triangle setupTriangle(Triangle t)
 {
   //edge vectors
-  t.e1 = subtract(t.v2, t.v1); //v2 - v1
+  t.e1 = subtract(t.v2, t.v1); //v2 - v1 //<>//
   t.e2 = subtract(t.v3, t.v2); //v3 - v2
   t.e3 = subtract(t.v1, t.v3); //v1 - v3
   
@@ -185,41 +189,54 @@ Triangle setupTriangle(Triangle t)
 // those with your versions once it works.
 void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
 {
-  /*stroke(1,1,0);
-  strokeWeight(10); //<>//
-  beginShape(POINTS);
-  vertex(t.pv1[X], t.pv1[Y]);
-  vertex(t.pv2[X], t.pv2[Y]);
-  vertex(t.pv3[X], t.pv3[Y]);
-  endShape();*/
   
-  /*stroke(1,0,1);
-  strokeWeight(1);
-  beginShape(TRIANGLE);
-  vertex(t.pv1[X], t.pv1[Y]);
-  vertex(t.pv2[X], t.pv2[Y]);
-  vertex(t.pv3[X], t.pv3[Y]);
-  endShape(CLOSE);*/
+  //projection
   
-  /*stroke(1,0,1);
-  beginShape(LINES);
-  vertex(t.pv1[X], t.pv1[Y]);
-  vertex(t.pv2[X], t.pv2[Y]);
-  endShape();
-  beginShape(LINES);
-  vertex(t.pv2[X], t.pv2[Y]);
-  vertex(t.pv3[X], t.pv3[Y]);
-  endShape();
-  beginShape(LINES);
-  vertex(t.pv3[X], t.pv3[Y]);
-  vertex(t.pv1[X], t.pv1[Y]);
-  endShape();*/
+  //edge vectors
+  /*t.pe1 = subtract(t.pv2, t.pv1); //v2 - v1
+  t.pe2 = subtract(t.pv3, t.pv2); //v3 - v2
+  t.pe3 = subtract(t.pv1, t.pv3); //v1 - v3
+    
+  t.pnormal = cross2(t.pe1, t.pe2);*/
+  
   //println(t.normal[Z]);
-  if(t.normal[Z] > 0){
+  if(dot(t.normal, new float[]{0,0,-1}) < 0){
+    
     stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
+    
     bresLine((int)t.pv1[X], (int)t.pv1[Y], (int)t.pv2[X], (int)t.pv2[Y]);
     bresLine((int)t.pv2[X], (int)t.pv2[Y], (int)t.pv3[X], (int)t.pv3[Y]);
     bresLine((int)t.pv3[X], (int)t.pv3[Y], (int)t.pv1[X], (int)t.pv1[Y]);
+    
+    /*stroke(1,1,0);
+    strokeWeight(10); //<>//
+    beginShape(POINTS);
+    vertex(t.pv1[X], t.pv1[Y]);
+    vertex(t.pv2[X], t.pv2[Y]);
+    vertex(t.pv3[X], t.pv3[Y]);
+    endShape();*/
+    
+    /*stroke(1,0,1);
+    strokeWeight(1);
+    beginShape(TRIANGLE);
+    vertex(t.pv1[X], t.pv1[Y]);
+    vertex(t.pv2[X], t.pv2[Y]);
+    vertex(t.pv3[X], t.pv3[Y]);
+    endShape(CLOSE);*/
+    
+    /*stroke(1,0,1);
+    beginShape(LINES);
+    vertex(t.pv1[X], t.pv1[Y]);
+    vertex(t.pv2[X], t.pv2[Y]);
+    endShape();
+    beginShape(LINES);
+    vertex(t.pv2[X], t.pv2[Y]);
+    vertex(t.pv3[X], t.pv3[Y]);
+    endShape();
+    beginShape(LINES);
+    vertex(t.pv3[X], t.pv3[Y]);
+    vertex(t.pv1[X], t.pv1[Y]);
+    endShape();*/
   }
 }
 
