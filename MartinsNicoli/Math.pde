@@ -31,7 +31,7 @@ float[] subtract(float[] v1, float v2[])
 {  
   float[] result = new float[min(v1.length, v2.length)];
   for(int i = 0; i < result.length; i++){
-    result[i] = v1[X] - v2[X];
+    result[i] = v1[i] - v2[i];
   }
   
   return result;

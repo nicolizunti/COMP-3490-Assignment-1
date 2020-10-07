@@ -172,7 +172,7 @@ Triangle[] makeSphere(int radius, int divisions)
 Triangle setupTriangle(Triangle t)
 {
   //edge vectors
-  t.e1 = subtract(t.v2, t.v1); //v2 - v1 //<>//
+  t.e1 = subtract(t.v2, t.v1); //v2 - v1
   t.e2 = subtract(t.v3, t.v2); //v3 - v2
   t.e3 = subtract(t.v1, t.v3); //v1 - v3
   
@@ -209,6 +209,8 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   
   if(t.pnormal > 0){//dot(t.normal, new float[]{0,0,-1}) < 0){
     //println(t.pnormal);
+    fillTriangle(t, shading);
+    
     stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
     
     bresLine((int)t.pv1[X], (int)t.pv1[Y], (int)t.pv2[X], (int)t.pv2[Y]);
@@ -255,25 +257,24 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
 void fillTriangle(Triangle t, Shading shading)
 {
   if(shading == Shading.FLAT){
-    float xmin = min(t.pv1[X], t.pv2[X], t.pv3[X]);
-    float xmax = max(t.pv1[X], t.pv2[X], t.pv3[X]);
-    float ymin = min(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
-    float ymax = max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
-    float[] myCoord = new float[]{xmin, ymin};
+    int xmin = (int)min(t.pv1[X], t.pv2[X], t.pv3[X]); //<>//
+    int xmax = (int)max(t.pv1[X], t.pv2[X], t.pv3[X]);
+    int ymin = (int)min(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
+    int ymax = (int)max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
     
-    while(myCoord[Y] < ymax){
-      while(myCoord[X] < xmax){
-        if(cross2(t.pe1, subtract(myCoord, t.pv1)) > 0 
-          && cross2(t.pe2, subtract(myCoord, t.pv2)) > 0 
-          && cross2(t.pe3, subtract(myCoord, t.pv3)) > 0){
+        
+    for(int i = ymin; i <= ymax; i++){
+      for(int j = xmin; j <= xmax; j++){
+        float a1 = cross2(t.pe1, subtract(new float[]{j,i}, t.pv1));
+        float a2 = cross2(t.pe2, subtract(new float[]{j,i}, t.pv2));
+        float a3 = cross2(t.pe3, subtract(new float[]{j,i}, t.pv3));
+        if((a1 >= 0 && a2 >= 0 && a3 >= 0) || (a1 <= 0 && a2 <= 0 && a3 <= 0)){
             stroke(FILL_COLOR[R], FILL_COLOR[G], FILL_COLOR[B]);
             beginShape(POINTS);
-            vertex(myCoord[X], myCoord[Y]);
+            vertex(j, i);
             endShape();
-        }
-        myCoord[X]++; 
+        } //<>//
       }
-      myCoord[Y]++;
     }
   }
   
