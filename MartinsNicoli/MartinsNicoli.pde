@@ -211,41 +211,43 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
     //println(t.pnormal);
     fillTriangle(t, shading);
     
-    stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
-    
-    bresLine((int)t.pv1[X], (int)t.pv1[Y], (int)t.pv2[X], (int)t.pv2[Y]);
-    bresLine((int)t.pv2[X], (int)t.pv2[Y], (int)t.pv3[X], (int)t.pv3[Y]);
-    bresLine((int)t.pv3[X], (int)t.pv3[Y], (int)t.pv1[X], (int)t.pv1[Y]);
-    
-    /*stroke(1,1,0);
-    strokeWeight(10); //<>//
-    beginShape(POINTS);
-    vertex(t.pv1[X], t.pv1[Y]);
-    vertex(t.pv2[X], t.pv2[Y]);
-    vertex(t.pv3[X], t.pv3[Y]);
-    endShape();*/
-    
-    /*stroke(1,0,1);
-    strokeWeight(1);
-    beginShape(TRIANGLE);
-    vertex(t.pv1[X], t.pv1[Y]);
-    vertex(t.pv2[X], t.pv2[Y]);
-    vertex(t.pv3[X], t.pv3[Y]);
-    endShape(CLOSE);*/
-    
-    /*stroke(1,0,1);
-    beginShape(LINES);
-    vertex(t.pv1[X], t.pv1[Y]);
-    vertex(t.pv2[X], t.pv2[Y]);
-    endShape();
-    beginShape(LINES);
-    vertex(t.pv2[X], t.pv2[Y]);
-    vertex(t.pv3[X], t.pv3[Y]);
-    endShape();
-    beginShape(LINES);
-    vertex(t.pv3[X], t.pv3[Y]);
-    vertex(t.pv1[X], t.pv1[Y]);
-    endShape();*/
+    if(doOutline){
+      stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
+      
+      bresLine((int)t.pv1[X], (int)t.pv1[Y], (int)t.pv2[X], (int)t.pv2[Y]);
+      bresLine((int)t.pv2[X], (int)t.pv2[Y], (int)t.pv3[X], (int)t.pv3[Y]);
+      bresLine((int)t.pv3[X], (int)t.pv3[Y], (int)t.pv1[X], (int)t.pv1[Y]);
+      
+      /*stroke(1,1,0);
+      strokeWeight(10); //<>//
+      beginShape(POINTS);
+      vertex(t.pv1[X], t.pv1[Y]);
+      vertex(t.pv2[X], t.pv2[Y]);
+      vertex(t.pv3[X], t.pv3[Y]);
+      endShape();*/
+      
+      /*stroke(1,0,1);
+      strokeWeight(1);
+      beginShape(TRIANGLE);
+      vertex(t.pv1[X], t.pv1[Y]);
+      vertex(t.pv2[X], t.pv2[Y]);
+      vertex(t.pv3[X], t.pv3[Y]);
+      endShape(CLOSE);*/
+      
+      /*stroke(1,0,1);
+      beginShape(LINES);
+      vertex(t.pv1[X], t.pv1[Y]);
+      vertex(t.pv2[X], t.pv2[Y]);
+      endShape();
+      beginShape(LINES);
+      vertex(t.pv2[X], t.pv2[Y]);
+      vertex(t.pv3[X], t.pv3[Y]);
+      endShape();
+      beginShape(LINES);
+      vertex(t.pv3[X], t.pv3[Y]);
+      vertex(t.pv1[X], t.pv1[Y]);
+      endShape();*/
+    }
   }
 }
 
@@ -260,8 +262,7 @@ void fillTriangle(Triangle t, Shading shading)
     int xmin = (int)min(t.pv1[X], t.pv2[X], t.pv3[X]); //<>//
     int xmax = (int)max(t.pv1[X], t.pv2[X], t.pv3[X]);
     int ymin = (int)min(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
-    int ymax = (int)max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
-    
+    int ymax = (int)max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);    
         
     for(int i = ymin; i <= ymax; i++){
       for(int j = xmin; j <= xmax; j++){
@@ -272,8 +273,29 @@ void fillTriangle(Triangle t, Shading shading)
             stroke(FILL_COLOR[R], FILL_COLOR[G], FILL_COLOR[B]);
             beginShape(POINTS);
             vertex(j, i);
+            endShape(); //<>//
+        }
+      }
+    }
+  }
+  if(shading == Shading.BARYCENTRIC){
+    int xmin = (int)min(t.pv1[X], t.pv2[X], t.pv3[X]);
+    int xmax = (int)max(t.pv1[X], t.pv2[X], t.pv3[X]);
+    int ymin = (int)min(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
+    int ymax = (int)max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
+    float triangArea = cross2(t.pe1,t.pe2)/2;    
+        
+    for(int i = ymin; i <= ymax; i++){
+      for(int j = xmin; j <= xmax; j++){
+        float a1 = cross2(t.pe1, subtract(new float[]{j,i}, t.pv1));
+        float a2 = cross2(t.pe2, subtract(new float[]{j,i}, t.pv2));
+        float a3 = cross2(t.pe3, subtract(new float[]{j,i}, t.pv3));
+        if((a1 >= 0 && a2 >= 0 && a3 >= 0) || (a1 <= 0 && a2 <= 0 && a3 <= 0)){
+            stroke(a1/triangArea, a2/triangArea, a3/triangArea);
+            beginShape(POINTS);
+            vertex(j, i);
             endShape();
-        } //<>//
+        }
       }
     }
   }
