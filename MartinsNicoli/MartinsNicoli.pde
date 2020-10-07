@@ -202,6 +202,7 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   //"projected" edge vectors
   t.pe1 = new float[]{t.pv2[X] - t.pv1[X], t.pv2[Y] - t.pv1[Y]};//subtract(t.pv2, t.pv1); //v2 - v1
   t.pe2 = new float[]{t.pv3[X] - t.pv2[X], t.pv3[Y] - t.pv2[Y]}; //v3 - v2
+  t.pe3 = new float[]{t.pv1[X] - t.pv3[X], t.pv1[Y] - t.pv3[Y]}; //v1 - v3
   
   t.pnormal = cross2(t.pe1, t.pe2);
   
@@ -253,6 +254,29 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
 // - uses POINTS to draw on the raster
 void fillTriangle(Triangle t, Shading shading)
 {
+  if(shading == Shading.FLAT){
+    float xmin = min(t.pv1[X], t.pv2[X], t.pv3[X]);
+    float xmax = max(t.pv1[X], t.pv2[X], t.pv3[X]);
+    float ymin = min(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
+    float ymax = max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
+    float[] myCoord = new float[]{xmin, ymin};
+    
+    while(myCoord[Y] < ymax){
+      while(myCoord[X] < xmax){
+        if(cross2(t.pe1, subtract(myCoord, t.pv1)) > 0 
+          && cross2(t.pe2, subtract(myCoord, t.pv2)) > 0 
+          && cross2(t.pe3, subtract(myCoord, t.pv3)) > 0){
+            stroke(FILL_COLOR[R], FILL_COLOR[G], FILL_COLOR[B]);
+            beginShape(POINTS);
+            vertex(myCoord[X], myCoord[Y]);
+            endShape();
+        }
+        myCoord[X]++; 
+      }
+      myCoord[Y]++;
+    }
+  }
+  
 }
 
 // given point p, normal n, eye location, light location, calculates phong
