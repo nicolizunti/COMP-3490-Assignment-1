@@ -157,6 +157,13 @@ Triangle[] makeSphere(int radius, int divisions)
             " v3: ",returnTriang[i].v3[X], returnTriang[i].v3[Y],returnTriang[i].v3[Z]);
   }*/
   
+  //verifying subtract function
+  /*float[] test = subtract2(new float[]{2,2,2},new float[]{1,1,1});
+  println("SubtractTest1 ",test[X], test[Y], test[Z] );
+  test = subtract2(new float[]{2,2},new float[]{1,1});
+  println("SubtractTest2 ",test[X], test[Y] );
+  */
+  
   return returnTriang;
 }
   
@@ -200,7 +207,7 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   
   
   if(t.pnormal > 0){//dot(t.normal, new float[]{0,0,-1}) < 0){
-    println(t.pnormal);
+    //println(t.pnormal);
     stroke(OUTLINE_COLOR[R], OUTLINE_COLOR[G], OUTLINE_COLOR[B]);
     
     bresLine((int)t.pv1[X], (int)t.pv1[Y], (int)t.pv2[X], (int)t.pv2[Y]);
