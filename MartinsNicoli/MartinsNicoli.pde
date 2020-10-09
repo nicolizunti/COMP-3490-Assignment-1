@@ -110,12 +110,6 @@ Triangle[] makeSphere(int radius, int divisions)
     }
   }
   
-  //printing coord for verification
-  /*for(int i =0 ; i < nPoints ; i++){
-    println(xCoord[i], yCoord[i], zCoord[i]);
-  }*/
-  
-  
   //Creating Triangles
   for(int k = 0; k < nPoints; k++){
     if( (k-(divisions-1))%divisions == 0){
@@ -138,41 +132,27 @@ Triangle[] makeSphere(int radius, int divisions)
         v2[X] = xCoord[(k+1)%nPoints];
         v2[Y] = yCoord[(k+1)%nPoints];
         v2[Z] = zCoord[(k+1)%nPoints];
-        v3[X] = xCoord[(k+divisions)%nPoints];
-        v3[Y] = yCoord[(k+divisions)%nPoints];
-        v3[Z] = zCoord[(k+divisions)%nPoints];
+        v3[X] = xCoord[(k+divisions+1)%nPoints];
+        v3[Y] = yCoord[(k+divisions+1)%nPoints];
+        v3[Z] = zCoord[(k+divisions+1)%nPoints];
         returnTriang[triangPos] = new Triangle(v1, v2, v3);
         setupTriangle(returnTriang[triangPos]);
         triangPos++;
       }
-      v1[X] = xCoord[(k+divisions+1)%nPoints];
-      v1[Y] = yCoord[(k+divisions+1)%nPoints];
-      v1[Z] = zCoord[(k+divisions+1)%nPoints];
-      v2[X] = xCoord[(k+divisions)%nPoints];
-      v2[Y] = yCoord[(k+divisions)%nPoints];
-      v2[Z] = zCoord[(k+divisions)%nPoints];
-      v3[X] = xCoord[(k+1)%nPoints];
-      v3[Y] = yCoord[(k+1)%nPoints];
-      v3[Z] = zCoord[(k+1)%nPoints];
+      v1[X] = xCoord[k%nPoints];
+      v1[Y] = yCoord[k%nPoints];
+      v1[Z] = zCoord[k%nPoints];
+      v2[X] = xCoord[(k+divisions+1)%nPoints];
+      v2[Y] = yCoord[(k+divisions+1)%nPoints];
+      v2[Z] = zCoord[(k+divisions+1)%nPoints];
+      v3[X] = xCoord[(k+divisions)%nPoints];
+      v3[Y] = yCoord[(k+divisions)%nPoints];
+      v3[Z] = zCoord[(k+divisions)%nPoints]; 
       returnTriang[triangPos] = new Triangle(v1, v2, v3);
       setupTriangle(returnTriang[triangPos]);
       triangPos++;
     }
   }
-  //printing traingles for verification
-  /*for(int i =0 ; i < nTriang ; i++){
-    println("triangle ", i, ": ","v1: ",returnTriang[i].v1[X], returnTriang[i].v1[Y],returnTriang[i].v1[Z],
-            " v2: ",returnTriang[i].v2[X], returnTriang[i].v2[Y],returnTriang[i].v2[Z],
-            " v3: ",returnTriang[i].v3[X], returnTriang[i].v3[Y],returnTriang[i].v3[Z]);
-  }*/
-  
-  //verifying subtract function
-  /*float[] test = subtract2(new float[]{2,2,2},new float[]{1,1,1});
-  println("SubtractTest1 ",test[X], test[Y], test[Z] );
-  test = subtract2(new float[]{2,2},new float[]{1,1});
-  println("SubtractTest2 ",test[X], test[Y] );
-  */
-  
   return returnTriang;
 }
   
@@ -222,9 +202,6 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
     
     //define lighting color scheme
     
-    /*if(lighting == Lighting.PHONG_FACE && shading == Shading.FLAT){
-    println("");
-    }*/
     lightColor(t, lighting);
     
     fillTriangle(t, shading);
@@ -236,35 +213,6 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
       bresLine((int)t.pv2[X], (int)t.pv2[Y], (int)t.pv3[X], (int)t.pv3[Y]);
       bresLine((int)t.pv3[X], (int)t.pv3[Y], (int)t.pv1[X], (int)t.pv1[Y]);
       
-      /*stroke(1,1,0);
-      strokeWeight(10);
-      beginShape(POINTS);
-      vertex(t.pv1[X], t.pv1[Y]);
-      vertex(t.pv2[X], t.pv2[Y]);
-      vertex(t.pv3[X], t.pv3[Y]);
-      endShape();*/
-      
-      /*stroke(1,0,1);
-      strokeWeight(1);
-      beginShape(TRIANGLE);
-      vertex(t.pv1[X], t.pv1[Y]);
-      vertex(t.pv2[X], t.pv2[Y]);
-      vertex(t.pv3[X], t.pv3[Y]);
-      endShape(CLOSE);*/
-      
-      /*stroke(1,0,1);
-      beginShape(LINES);
-      vertex(t.pv1[X], t.pv1[Y]);
-      vertex(t.pv2[X], t.pv2[Y]);
-      endShape();
-      beginShape(LINES);
-      vertex(t.pv2[X], t.pv2[Y]);
-      vertex(t.pv3[X], t.pv3[Y]);
-      endShape();
-      beginShape(LINES);
-      vertex(t.pv3[X], t.pv3[Y]);
-      vertex(t.pv1[X], t.pv1[Y]);
-      endShape();*/
     }
   }
 }
