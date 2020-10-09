@@ -9,12 +9,12 @@ class Triangle {
   float[] v1; // 3 triangle vertices
   float[] v2;
   float[] v3;
+  float[] centroid;
 
   // projected data. On the screen raster
   float[] pv1; // (p)rojected vertices
   float[] pv2;
   float[] pv3;
-  float[] pcentroid;
 
   // add other things as needed, like normals (face, vectors), edge vectors, colors, etc.  
   float[] normal;
@@ -127,6 +127,7 @@ Triangle[] makeSphere(int radius, int divisions)
       v3[Y] = yCoord[(k+divisions)%nPoints];
       v3[Z] = zCoord[(k+divisions)%nPoints];
       returnTriang[triangPos] = new Triangle(v1, v2, v3);
+      setupTriangle(returnTriang[triangPos]);
       triangPos++;
     }
     else{
@@ -141,6 +142,7 @@ Triangle[] makeSphere(int radius, int divisions)
         v3[Y] = yCoord[(k+divisions)%nPoints];
         v3[Z] = zCoord[(k+divisions)%nPoints];
         returnTriang[triangPos] = new Triangle(v1, v2, v3);
+        setupTriangle(returnTriang[triangPos]);
         triangPos++;
       }
       v1[X] = xCoord[(k+divisions+1)%nPoints];
@@ -153,6 +155,7 @@ Triangle[] makeSphere(int radius, int divisions)
       v3[Y] = yCoord[(k+1)%nPoints];
       v3[Z] = zCoord[(k+1)%nPoints];
       returnTriang[triangPos] = new Triangle(v1, v2, v3);
+      setupTriangle(returnTriang[triangPos]);
       triangPos++;
     }
   }
@@ -218,6 +221,10 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
     //println(t.pnormal);
     
     //define lighting color scheme
+    
+    /*if(lighting == Lighting.PHONG_FACE && shading == Shading.FLAT){
+    println("");
+    }*/
     lightColor(t, lighting);
     
     fillTriangle(t, shading);
@@ -230,7 +237,7 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
       bresLine((int)t.pv3[X], (int)t.pv3[Y], (int)t.pv1[X], (int)t.pv1[Y]);
       
       /*stroke(1,1,0);
-      strokeWeight(10); //<>//
+      strokeWeight(10);
       beginShape(POINTS);
       vertex(t.pv1[X], t.pv1[Y]);
       vertex(t.pv2[X], t.pv2[Y]);
@@ -270,7 +277,7 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
 void fillTriangle(Triangle t, Shading shading)
 {
   if(shading != Shading.NONE){
-    int xmin = (int)min(t.pv1[X], t.pv2[X], t.pv3[X]); //<>//
+    int xmin = (int)min(t.pv1[X], t.pv2[X], t.pv3[X]);
     int xmax = (int)max(t.pv1[X], t.pv2[X], t.pv3[X]);
     int ymin = (int)min(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
     int ymax = (int)max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);  
@@ -279,6 +286,7 @@ void fillTriangle(Triangle t, Shading shading)
     float a1, a2, a3;
     //Vectors of Barycentric Coordinates
     float[] baryE1, baryE2, baryE3;
+    float[] avgColor;
         
     for(int i = ymin; i <= ymax; i++){
       for(int j = xmin; j <= xmax; j++){
@@ -290,10 +298,14 @@ void fillTriangle(Triangle t, Shading shading)
         a3 = cross2(t.pe3, baryE3);
         if((a1 >= 0 && a2 >= 0 && a3 >= 0) || (a1 <= 0 && a2 <= 0 && a3 <= 0)){
           
-          if(shading == Shading.FLAT)
-              stroke(FILL_COLOR[R], FILL_COLOR[G], FILL_COLOR[B]);
+          if(shading == Shading.FLAT){
+              avgColor = new float[]{(t.colorV1[R] + t.colorV2[R] + t.colorV3[R])/3, 
+                        (t.colorV1[R] + t.colorV2[R] + t.colorV3[R])/3,
+                        (t.colorV1[R] + t.colorV2[R] + t.colorV3[R])/3};
+              stroke(avgColor[R], avgColor[G], avgColor[B]);
+          }
                               
-            else if(shading == Shading.BARYCENTRIC) //<>//
+            else if(shading == Shading.BARYCENTRIC)
               stroke((a1/crossTri), (a2/crossTri), (a3/crossTri));
               
             else if(shading == Shading.GOURAUD){
@@ -325,11 +337,25 @@ void fillTriangle(Triangle t, Shading shading)
 float[] phong(float[] p, float[] n, float[] eye, float[] light, 
   float[] material, float[] fillColor, float s)
 {
-  return new float[]{0, 0, 0};
+  float[] viewV = subtract(eye, p);
+  float[] lightV = subtract(light, p);
+  float[] result = new float[3];
+  normalize(viewV);
+  normalize(lightV);
+  float[] refV = subtract(lightV,multVS(2*dot(n, lightV),n));
+  normalize(refV);
+  float diffused = dot(lightV, n)*material[M_DIFFUSE];
+  float specular = material[M_SPECULAR]*pow(dot(refV, viewV), s);
+  float lightPhong = material[M_AMBIENT] + diffused + material[M_SPECULAR]*specular;
+  result[R] = lightPhong*fillColor[R] ;
+  result[G] = lightPhong*fillColor[G];
+  result[B] = lightPhong*fillColor[B];
+  
+  return result;
 }
 
 // implements Bresenham's line algorithm
-void bresLine(int fromX, int fromY, int toX, int toY) //<>//
+void bresLine(int fromX, int fromY, int toX, int toY)
 {
   
   int myX = fromX, myY = fromY, sX ,sY;
@@ -368,7 +394,7 @@ void bresLine(int fromX, int fromY, int toX, int toY) //<>//
       plotPoint(myX,myY);
     }
   }
-   //<>// //<>//
+  
 }
 
 void plotPoint(int myX, int myY){
@@ -381,15 +407,22 @@ void lightColor(Triangle t, Lighting lighting){
   if(lighting == Lighting.FLAT)
     t.colorV1 = t.colorV2 = t.colorV3 = FILL_COLOR;
   else if(lighting == Lighting.PHONG_FACE){
-    t.colorV1 = t.colorV2 = t.colorV3 =  phong(t.pcentroid, t.normal, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
+    float[] point = new float[]{(t.v1[X]+t.v2[X]+t.v3[X])/3,(t.v1[Y]+t.v2[Y]+t.v3[Y])/3,(t.v1[Z]+t.v2[Z]+t.v3[Z])/3};
+    t.colorV1 = t.colorV2 = t.colorV3 = phong(point, t.normal, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
   }
   else{ //if(lighting == Lighting.PHONG_VERTEX){
     //calculate normalV1,2,3
+    t.normalV1 = subtract(t.v1, new float[]{0,0,0}); //<>//
+    t.normalV2 = Arrays.copyOf(t.v2, t.v2.length);
+    t.normalV3 = Arrays.copyOf(t.v3, t.v3.length);
+    normalize(t.normalV1);
+    normalize(t.normalV2);
+    normalize(t.normalV3);
     
     //calculate colors
-    t.colorV1 =  phong(t.pv1, t.normalV1, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
-    t.colorV2 =  phong(t.pv2, t.normalV2, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
-    t.colorV3 =  phong(t.pv3, t.normalV3, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
+    t.colorV1 =  phong(t.v1, t.normalV1, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
+    t.colorV2 =  phong(t.v2, t.normalV2, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
+    t.colorV3 =  phong(t.v3, t.normalV3, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
   }
   
 }

@@ -17,15 +17,18 @@ float[] cross3(float[] a, float[] b)
 // normalize v to length 1 in place
 void normalize(float[] v)
 {
-  v[X] = v[X]/abs(v[X]);
-  v[Y] = v[Y]/abs(v[Y]);
-  v[Z] = v[Z]/abs(v[Z]);
+  float lengthV = sqrt(v[X]*v[X] + v[Y]*v[Y] + v[Z]*v[Z]);
+  for(int i = 0; i < v.length; i++){
+    if(lengthV != 0.0)
+      v[i] = v[i]/lengthV;
+    else v[i] = 0.0;
+  }
 }
 
 float dot(float[] v1, float[] v2)
 { 
   return (v1[X]*v2[X] + v1[Y]*v2[Y] + v1[Z]*v2[Z]);
-} //<>//
+}
 
 float[] subtract(float[] v1, float v2[])
 {  
@@ -35,4 +38,8 @@ float[] subtract(float[] v1, float v2[])
   }
   
   return result;
+}
+
+float[] multVS(float scalar, float[] vector){
+  return new float[]{scalar*vector[X], scalar*vector[Y], scalar*vector[Z]};
 }
