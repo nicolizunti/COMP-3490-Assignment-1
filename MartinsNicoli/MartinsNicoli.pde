@@ -14,6 +14,7 @@ class Triangle {
   float[] pv1; // (p)rojected vertices
   float[] pv2;
   float[] pv3;
+  float[] pcentroid;
 
   // add other things as needed, like normals (face, vectors), edge vectors, colors, etc.  
   float[] normal;
@@ -25,6 +26,11 @@ class Triangle {
   float[] pe1;
   float[] pe2;
   float[] pe3;
+  
+  float[] normalV1, normalV2, normalV3;
+  
+  //Color value
+  float[] colorV1, colorV2, colorV3;
 }
 
 Triangle[] sphereList;
@@ -177,6 +183,7 @@ Triangle setupTriangle(Triangle t)
   t.e3 = subtract(t.v1, t.v3); //v1 - v3
   
   t.normal = cross3(t.e1, t.e2);
+  normalize(t.normal);
   
   return t;
 }
@@ -209,6 +216,10 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   
   if(t.pnormal > 0){//dot(t.normal, new float[]{0,0,-1}) < 0){
     //println(t.pnormal);
+    
+    //define lighting color scheme
+    lightColor(t, lighting);
+    
     fillTriangle(t, shading);
     
     if(doOutline){
@@ -263,26 +274,47 @@ void fillTriangle(Triangle t, Shading shading)
     int xmax = (int)max(t.pv1[X], t.pv2[X], t.pv3[X]);
     int ymin = (int)min(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
     int ymax = (int)max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);  
-    float triangArea = abs(cross2(t.pe1,t.pe2))/2;      
+    float crossTri = abs(cross2(t.pe1,t.pe2)); 
+    //area of the paralelograms from edge and bary vectors
+    float a1, a2, a3;
+    //Vectors of Barycentric Coordinates
+    float[] baryE1, baryE2, baryE3;
         
     for(int i = ymin; i <= ymax; i++){
       for(int j = xmin; j <= xmax; j++){
-        float a1 = cross2(t.pe1, subtract(new float[]{j,i}, t.pv1));
-        float a2 = cross2(t.pe2, subtract(new float[]{j,i}, t.pv2));
-        float a3 = cross2(t.pe3, subtract(new float[]{j,i}, t.pv3));
+        baryE1 = subtract(new float[]{j,i}, t.pv1);
+        baryE2 = subtract(new float[]{j,i}, t.pv2);
+        baryE3 = subtract(new float[]{j,i}, t.pv3);
+        a1 = cross2(t.pe1, baryE1);
+        a2 = cross2(t.pe2, baryE2);
+        a3 = cross2(t.pe3, baryE3);
         if((a1 >= 0 && a2 >= 0 && a3 >= 0) || (a1 <= 0 && a2 <= 0 && a3 <= 0)){
-            if(shading == Shading.FLAT)
+          
+          if(shading == Shading.FLAT)
               stroke(FILL_COLOR[R], FILL_COLOR[G], FILL_COLOR[B]);
+                              
             else if(shading == Shading.BARYCENTRIC) //<>//
-              stroke(((a1/2)/triangArea), ((a2/2)/triangArea), ((a3/2)/triangArea));
+              stroke((a1/crossTri), (a2/crossTri), (a3/crossTri));
+              
+            else if(shading == Shading.GOURAUD){
+              stroke((t.colorV1[R]*a1+t.colorV2[R]*a2+t.colorV3[R]*a3)/crossTri, 
+                        (t.colorV1[G]*a1+t.colorV2[G]*a2+t.colorV3[G]*a3)/crossTri, 
+                        (t.colorV1[B]*a1+t.colorV2[B]*a2+t.colorV3[B]*a3)/crossTri); //c = v1*u+v2*v+v3*w
+            }
+            else{ //shading == Shading.PHONG
+            stroke(0,0,0);
+            }
+              
+              
             beginShape(POINTS);
             vertex(j, i);
             endShape();
+            
         }
       }
     }
   }
-  
+  else stroke(0,0,0); //stateful
   
 }
 
@@ -343,4 +375,21 @@ void plotPoint(int myX, int myY){
   beginShape(POINTS);
   vertex(myX, myY);
   endShape();
+}
+
+void lightColor(Triangle t, Lighting lighting){
+  if(lighting == Lighting.FLAT)
+    t.colorV1 = t.colorV2 = t.colorV3 = FILL_COLOR;
+  else if(lighting == Lighting.PHONG_FACE){
+    t.colorV1 = t.colorV2 = t.colorV3 =  phong(t.pcentroid, t.normal, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
+  }
+  else{ //if(lighting == Lighting.PHONG_VERTEX){
+    //calculate normalV1,2,3
+    
+    //calculate colors
+    t.colorV1 =  phong(t.pv1, t.normalV1, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
+    t.colorV2 =  phong(t.pv2, t.normalV2, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
+    t.colorV3 =  phong(t.pv3, t.normalV3, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
+  }
+  
 }

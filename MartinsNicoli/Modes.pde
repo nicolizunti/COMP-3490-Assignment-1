@@ -7,14 +7,14 @@ final char KEY_ACCELERATED = '!';
 final char KEY_LINE_TEST = 't';
 
 enum Lighting {
-  FLAT, 
+    FLAT, 
     PHONG_FACE, 
     PHONG_VERTEX
 }
 Lighting lighting = Lighting.PHONG_FACE;
 
 enum Shading {
-  NONE, 
+    NONE, 
     BARYCENTRIC, 
     FLAT, 
     GOURAUD, 
