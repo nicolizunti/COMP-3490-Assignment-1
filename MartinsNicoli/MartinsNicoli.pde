@@ -126,28 +126,28 @@ Triangle[] makeSphere(int radius, int divisions)
     }
     else{
       if(k%divisions != 0){ 
-        v1[X] = xCoord[k%nPoints];
-        v1[Y] = yCoord[k%nPoints];
-        v1[Z] = zCoord[k%nPoints];
-        v2[X] = xCoord[(k+1)%nPoints];
-        v2[Y] = yCoord[(k+1)%nPoints];
-        v2[Z] = zCoord[(k+1)%nPoints];
-        v3[X] = xCoord[(k+divisions+1)%nPoints];
-        v3[Y] = yCoord[(k+divisions+1)%nPoints];
-        v3[Z] = zCoord[(k+divisions+1)%nPoints];
+        v3[X] = xCoord[k%nPoints];
+        v3[Y] = yCoord[k%nPoints];
+        v3[Z] = zCoord[k%nPoints];
+        v1[X] = xCoord[(k+divisions+1)%nPoints];
+        v1[Y] = yCoord[(k+divisions+1)%nPoints];
+        v1[Z] = zCoord[(k+divisions+1)%nPoints];
+        v2[X] = xCoord[(k+divisions)%nPoints];
+        v2[Y] = yCoord[(k+divisions)%nPoints];
+        v2[Z] = zCoord[(k+divisions)%nPoints];
         returnTriang[triangPos] = new Triangle(v1, v2, v3);
         setupTriangle(returnTriang[triangPos]);
         triangPos++;
       }
-      v1[X] = xCoord[k%nPoints];
-      v1[Y] = yCoord[k%nPoints];
-      v1[Z] = zCoord[k%nPoints];
+      v3[X] = xCoord[k%nPoints];
+      v3[Y] = yCoord[k%nPoints];
+      v3[Z] = zCoord[k%nPoints];
+      v1[X] = xCoord[(k+1)%nPoints];
+      v1[Y] = yCoord[(k+1)%nPoints];
+      v1[Z] = zCoord[(k+1)%nPoints];
       v2[X] = xCoord[(k+divisions+1)%nPoints];
       v2[Y] = yCoord[(k+divisions+1)%nPoints];
       v2[Z] = zCoord[(k+divisions+1)%nPoints];
-      v3[X] = xCoord[(k+divisions)%nPoints];
-      v3[Y] = yCoord[(k+divisions)%nPoints];
-      v3[Z] = zCoord[(k+divisions)%nPoints]; 
       returnTriang[triangPos] = new Triangle(v1, v2, v3);
       setupTriangle(returnTriang[triangPos]);
       triangPos++;
@@ -190,7 +190,7 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
   //projection
   
   //"projected" edge vectors
-  t.pe1 = new float[]{t.pv2[X] - t.pv1[X], t.pv2[Y] - t.pv1[Y]};//subtract(t.pv2, t.pv1); //v2 - v1
+  t.pe1 = subtract(t.pv2, t.pv1); //v2 - v1
   t.pe2 = new float[]{t.pv3[X] - t.pv2[X], t.pv3[Y] - t.pv2[Y]}; //v3 - v2
   t.pe3 = new float[]{t.pv1[X] - t.pv3[X], t.pv1[Y] - t.pv3[Y]}; //v1 - v3
   
@@ -201,7 +201,9 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
     //println(t.pnormal);
     
     //define lighting color scheme
-    
+    /*if(shading == Shading.FLAT){
+      println(""); //<>//
+    }*/
     lightColor(t, lighting);
     
     fillTriangle(t, shading);
@@ -234,7 +236,7 @@ void fillTriangle(Triangle t, Shading shading)
     float a1, a2, a3;
     //Vectors of Barycentric Coordinates
     float[] baryE1, baryE2, baryE3;
-    float[] avgColor;
+    float[] avgColor; //<>//
         
     for(int i = ymin; i <= ymax; i++){
       for(int j = xmin; j <= xmax; j++){
@@ -285,19 +287,21 @@ void fillTriangle(Triangle t, Shading shading)
 float[] phong(float[] p, float[] n, float[] eye, float[] light, 
   float[] material, float[] fillColor, float s)
 {
-  float[] viewV = subtract(eye, p);
-  float[] lightV = subtract(light, p);
-  float[] result = new float[3];
+  float[] result, viewV, lightV, refV;
+  float diffused, specular, lightPhong;
+  viewV = subtract(eye, p);
+  lightV = subtract(light, p);
   normalize(viewV);
   normalize(lightV);
-  float[] refV = subtract(lightV,multVS(2*dot(n, lightV),n));
-  normalize(refV);
-  float diffused = dot(lightV, n)*material[M_DIFFUSE];
-  float specular = material[M_SPECULAR]*pow(dot(refV, viewV), s);
-  float lightPhong = material[M_AMBIENT] + diffused + material[M_SPECULAR]*specular;
-  result[R] = lightPhong*fillColor[R] ;
-  result[G] = lightPhong*fillColor[G];
-  result[B] = lightPhong*fillColor[B];
+  refV = subtract(multVS(2*dot(n, lightV),n), lightV);
+  
+  //normalize(refV);
+  
+  diffused = max(dot(lightV, n), 0.0);
+  specular = pow(max(dot(refV, viewV), 0.0), s);
+  lightPhong = material[M_AMBIENT] + diffused*material[M_DIFFUSE] + specular*material[M_SPECULAR];
+  
+  result = new float[]{lightPhong*fillColor[R], lightPhong*fillColor[G], lightPhong*fillColor[B]};
   
   return result;
 }
@@ -355,14 +359,14 @@ void lightColor(Triangle t, Lighting lighting){
   if(lighting == Lighting.FLAT)
     t.colorV1 = t.colorV2 = t.colorV3 = FILL_COLOR;
   else if(lighting == Lighting.PHONG_FACE){
-    float[] point = new float[]{(t.v1[X]+t.v2[X]+t.v3[X])/3,(t.v1[Y]+t.v2[Y]+t.v3[Y])/3,(t.v1[Z]+t.v2[Z]+t.v3[Z])/3};
-    t.colorV1 = t.colorV2 = t.colorV3 = phong(point, t.normal, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
+    t.centroid = new float[]{(t.v1[X]+t.v2[X]+t.v3[X])/3,(t.v1[Y]+t.v2[Y]+t.v3[Y])/3,(t.v1[Z]+t.v2[Z]+t.v3[Z])/3};
+    t.colorV1 = t.colorV2 = t.colorV3 = phong(t.centroid, t.normal, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
   }
   else{ //if(lighting == Lighting.PHONG_VERTEX){
     //calculate normalV1,2,3
     t.normalV1 = subtract(t.v1, new float[]{0,0,0}); //<>//
-    t.normalV2 = Arrays.copyOf(t.v2, t.v2.length);
-    t.normalV3 = Arrays.copyOf(t.v3, t.v3.length);
+    t.normalV2 = subtract(t.v2, new float[]{0,0,0});
+    t.normalV3 = subtract(t.v3, new float[]{0,0,0});
     normalize(t.normalV1);
     normalize(t.normalV2);
     normalize(t.normalV3);
