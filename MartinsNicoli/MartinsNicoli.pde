@@ -201,9 +201,6 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
     //println(t.pnormal);
     
     //define lighting color scheme
-    /*if(shading == Shading.FLAT){
-      println("");
-    }*/
     lightColor(t, lighting);
     
     fillTriangle(t, shading);
@@ -259,7 +256,7 @@ void fillTriangle(Triangle t, Shading shading)
               stroke((a1/crossTri), (a2/crossTri), (a3/crossTri));
               
             else if(shading == Shading.GOURAUD){
-              stroke((t.colorV1[R]*a1+t.colorV2[R]*a2+t.colorV3[R]*a3)/crossTri,  //<>//
+              stroke((t.colorV1[R]*a1+t.colorV2[R]*a2+t.colorV3[R]*a3)/crossTri,  //<>// //<>//
                         (t.colorV1[G]*a1+t.colorV2[G]*a2+t.colorV3[G]*a3)/crossTri, 
                         (t.colorV1[B]*a1+t.colorV2[B]*a2+t.colorV3[B]*a3)/crossTri); //c = v1*u+v2*v+v3*w
             }
@@ -312,36 +309,44 @@ void bresLine(int fromX, int fromY, int toX, int toY)
   int myX = fromX, myY = fromY, sX ,sY;
   int dX = toX - fromX;
   int dY = toY - fromY;
-  float slope;
+  float slope, error = 0.5;
   
-  if(dX == 0 && dY == 0){
-    plotPoint(toX, toY);
-  }
-  else if(dY != 0 && abs(dX/dY) <= 1){ 
-    
-    if(dX != 0) sX = dX/abs(dX);
+  if(dX != 0) sX = dX/abs(dX);
     else sX = 0;
     
-    sY = dY/abs(dY);
+  if(dY != 0) sY = dY/abs(dY);
+    else sY = 0;
+  
+  if(dX ==0 && dY == 0){
+    plotPoint(toX,toY);
+  }
+  else if(dY != 0 && abs(dX/dY) < 1){ 
+    
+    slope = abs((float)dX/dY);
     
     for(int i = 0; i < abs(dY); i++){
-      slope = abs((float)dX/dY);
-      myX = floor((fromX + i*slope*sX) + 0.5);
+      error += slope;
+      if(error >= 1){
+        myX = myX + sX;
+        error = error - 1;
+      }
+      
       myY = fromY + i*sY;
       plotPoint(myX,myY);
     }
   }
-  else{ //(dX != 0 && abs(dY/dX) <= 1)
-  
-    if(dY != 0) sY = dY/abs(dY);
-    else sY = 0;
+  else{ 
     
-    sX = dX/abs(dX);
+    slope = abs((float)dY/dX);
     
     for(int i = 0; i < abs(dX); i++){
-      slope = abs((float)dY/dX);
-      myY = floor((fromY + i*slope*sY) + 0.5);
+      error += slope;
+      if(error >= 1){
+        myY = myY + sY;
+        error = error - 1;
+      }   
       myX = fromX + i*sX;
+      
       plotPoint(myX,myY);
     }
   }
@@ -367,23 +372,9 @@ void lightColor(Triangle t, Lighting lighting){
     t.normalV2 = subtract(t.v2, new float[]{0,0,0});
     t.normalV3 = subtract(t.v3, new float[]{0,0,0});
     
-    
     normalize(t.normalV1);
     normalize(t.normalV2);
     normalize(t.normalV3);
-    /*
-    beginShape(LINES);
-    stroke(1,0,0);
-    vertex(t.pv1[X], t.pv1[Y]);
-    vertex(t.pv1[X] + project(t.normalV1)[X]*20, t.pv1[Y] + project(t.normalV1)[Y]*20);
-    stroke(0,0,1);
-    vertex(t.pv2[X], t.pv2[Y]);
-    vertex(t.pv2[X] + project(t.normalV2)[X]*20, t.pv2[Y] + project(t.normalV2)[Y]*20);
-    stroke(0,1,1);
-    vertex(t.pv3[X], t.pv3[Y]);
-    vertex(t.pv3[X] + project(t.normalV3)[X]*20, t.pv3[Y] + project(t.normalV3)[Y]*20);
-    endShape();
-      */
     
     //calculate colors
     t.colorV1 =  phong(t.v1, t.normalV1, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
