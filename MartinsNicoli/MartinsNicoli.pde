@@ -202,7 +202,7 @@ void draw2DTriangle(Triangle t, Lighting lighting, Shading shading)
     
     //define lighting color scheme
     /*if(shading == Shading.FLAT){
-      println(""); //<>//
+      println("");
     }*/
     lightColor(t, lighting);
     
@@ -231,12 +231,12 @@ void fillTriangle(Triangle t, Shading shading)
     int xmax = (int)max(t.pv1[X], t.pv2[X], t.pv3[X]);
     int ymin = (int)min(t.pv1[Y], t.pv2[Y], t.pv3[Y]);
     int ymax = (int)max(t.pv1[Y], t.pv2[Y], t.pv3[Y]);  
-    float crossTri = abs(cross2(t.pe1,t.pe2)); 
+    float crossTri = cross2(t.pe1,t.pe2); 
     //area of the paralelograms from edge and bary vectors
     float a1, a2, a3;
     //Vectors of Barycentric Coordinates
     float[] baryE1, baryE2, baryE3;
-    float[] avgColor; //<>//
+    float[] avgColor;
         
     for(int i = ymin; i <= ymax; i++){
       for(int j = xmin; j <= xmax; j++){
@@ -259,15 +259,14 @@ void fillTriangle(Triangle t, Shading shading)
               stroke((a1/crossTri), (a2/crossTri), (a3/crossTri));
               
             else if(shading == Shading.GOURAUD){
-              stroke((t.colorV1[R]*a1+t.colorV2[R]*a2+t.colorV3[R]*a3)/crossTri, 
+              stroke((t.colorV1[R]*a1+t.colorV2[R]*a2+t.colorV3[R]*a3)/crossTri,  //<>//
                         (t.colorV1[G]*a1+t.colorV2[G]*a2+t.colorV3[G]*a3)/crossTri, 
                         (t.colorV1[B]*a1+t.colorV2[B]*a2+t.colorV3[B]*a3)/crossTri); //c = v1*u+v2*v+v3*w
             }
             else{ //shading == Shading.PHONG
             stroke(0,0,0);
             }
-              
-              
+                            
             beginShape(POINTS);
             vertex(j, i);
             endShape();
@@ -364,12 +363,27 @@ void lightColor(Triangle t, Lighting lighting){
   }
   else{ //if(lighting == Lighting.PHONG_VERTEX){
     //calculate normalV1,2,3
-    t.normalV1 = subtract(t.v1, new float[]{0,0,0}); //<>//
+    t.normalV1 = subtract(t.v1, new float[]{0,0,0});
     t.normalV2 = subtract(t.v2, new float[]{0,0,0});
     t.normalV3 = subtract(t.v3, new float[]{0,0,0});
+    
+    
     normalize(t.normalV1);
     normalize(t.normalV2);
     normalize(t.normalV3);
+    /*
+    beginShape(LINES);
+    stroke(1,0,0);
+    vertex(t.pv1[X], t.pv1[Y]);
+    vertex(t.pv1[X] + project(t.normalV1)[X]*20, t.pv1[Y] + project(t.normalV1)[Y]*20);
+    stroke(0,0,1);
+    vertex(t.pv2[X], t.pv2[Y]);
+    vertex(t.pv2[X] + project(t.normalV2)[X]*20, t.pv2[Y] + project(t.normalV2)[Y]*20);
+    stroke(0,1,1);
+    vertex(t.pv3[X], t.pv3[Y]);
+    vertex(t.pv3[X] + project(t.normalV3)[X]*20, t.pv3[Y] + project(t.normalV3)[Y]*20);
+    endShape();
+      */
     
     //calculate colors
     t.colorV1 =  phong(t.v1, t.normalV1, EYE, LIGHT, MATERIAL, FILL_COLOR, PHONG_SPECULAR);
