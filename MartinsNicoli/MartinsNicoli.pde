@@ -256,9 +256,9 @@ void fillTriangle(Triangle t, Shading shading)
               stroke((a1/crossTri), (a2/crossTri), (a3/crossTri));
               
             else if(shading == Shading.GOURAUD){
-              stroke((t.colorV1[R]*a1+t.colorV2[R]*a2+t.colorV3[R]*a3)/crossTri,  //<>// //<>//
-                        (t.colorV1[G]*a1+t.colorV2[G]*a2+t.colorV3[G]*a3)/crossTri, 
-                        (t.colorV1[B]*a1+t.colorV2[B]*a2+t.colorV3[B]*a3)/crossTri); //c = v1*u+v2*v+v3*w
+              stroke((t.colorV1[R]*a2+t.colorV2[R]*a3+t.colorV3[R]*a1)/crossTri,  //<>//
+                        (t.colorV1[G]*a2+t.colorV2[G]*a3+t.colorV3[G]*a1)/crossTri, 
+                        (t.colorV1[B]*a2+t.colorV2[B]*a3+t.colorV3[B]*a1)/crossTri); //c = v1*u+v2*v+v3*w
             }
             else{ //shading == Shading.PHONG
             stroke(0,0,0);
@@ -368,7 +368,7 @@ void lightColor(Triangle t, Lighting lighting){
   }
   else{ //if(lighting == Lighting.PHONG_VERTEX){
     //calculate normalV1,2,3
-    t.normalV1 = subtract(t.v1, new float[]{0,0,0});
+    t.normalV1 = subtract(t.v1, new float[]{0,0,0}); //<>//
     t.normalV2 = subtract(t.v2, new float[]{0,0,0});
     t.normalV3 = subtract(t.v3, new float[]{0,0,0});
     
